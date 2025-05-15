@@ -1,12 +1,26 @@
 package org.ed06.app;
 
-import org.ed06.model.Cliente;
-import org.ed06.model.Habitacion;
-import org.ed06.model.Hotel;
+import org.ed06.model.*;
 
 import java.time.LocalDate;
 import java.util.Scanner;
 
+import static org.ed06.model.Habitacion.tipoHabitacion.*;
+
+/**
+ * Clase principal de la aplicación que gestiona un hotel a través de la interacción con el usuario mediante un menú.
+ * Permite registrar habitaciones, listar habitaciones disponibles, realizar reservas,
+ * registrar clientes y listar clientes y reservas.
+ *
+ * La aplicación utiliza instancias de las clases GestorHabitaciones, GestorReservas,
+ * GestorClientes y Hotel para llevar a cabo las operaciones principales.
+ *
+ * El flujo principal se desarrolla dentro del método main, que muestra un menú con opciones
+ * para que el usuario interactúe con el sistema del hotel. Las constantes definen las opciones
+ * disponibles en el menú.
+ *
+ * @author Miguel
+ */
 public class Main {
     static Scanner scanner = new Scanner(System.in);
     // Definimos constantes para las diferentes opciones del menú
@@ -20,24 +34,27 @@ public class Main {
 
     public static void main(String[] args) {
         // Variales locales
-        String tipo;
+        Habitacion.tipoHabitacion tipo;
+        GestorHabitaciones gestorHabitaciones = new GestorHabitaciones();
+        GestorClientes gestorClientes = new GestorClientes();
+        GestorReservas gestorReservas = new GestorReservas();
 
         // Creamos un menú para el administrador con las diferentes opciones proporcionadas
-        Hotel hotel = new Hotel("El mirador", "Calle Entornos de Desarrollo 6", "123456789");
+        Hotel hotel = new Hotel("El mirador", "Calle Entornos de Desarrollo 6", "123456789" , gestorHabitaciones, gestorClientes, gestorReservas);
 
         // Registramos algunas habitaciones
-        hotel.registrarHabitacion("SIMPLE", 50);
-        hotel.registrarHabitacion("DOBLE", 80);
-        hotel.registrarHabitacion("SUITE", 120);
-        hotel.registrarHabitacion("LITERAS", 200);
-        hotel.registrarHabitacion("SIMPLE", 65);
-        hotel.registrarHabitacion("DOBLE", 100);
-        hotel.registrarHabitacion("SUITE", 150);
-        hotel.registrarHabitacion("LITERAS", 250);
+        hotel.registrarHabitacion(SIMPLE, 50);
+        hotel.registrarHabitacion(DOBLE, 80);
+        hotel.registrarHabitacion(SUITE, 120);
+        hotel.registrarHabitacion(LITERAS, 200);
+        hotel.registrarHabitacion(SIMPLE, 65);
+        hotel.registrarHabitacion(DOBLE, 100);
+        hotel.registrarHabitacion(SUITE, 150);
+        hotel.registrarHabitacion(LITERAS, 250);
 
         // Registramos algunos clientes
-        hotel.registrarCliente("Daniel", "daniel@daniel.com", "12345678A", true);
-        hotel.registrarCliente("Adrián", "adrian@adrian.es", "87654321B", false);
+        GestorClientes.registrarCliente("Daniel", "daniel@daniel.com", "12345678A", true);
+        GestorClientes.registrarCliente("Adrián", "adrian@adrian.es", "87654321B", false);
 
         // Mostramos el menú
         while (true) {
@@ -47,7 +64,7 @@ public class Main {
             switch (opcion) {
                 case REGISTRAR_HABITACION:
                     System.out.println("Introduce el tipo de habitación (SIMPLE, DOBLE, SUITE): ");
-                    tipo = scanner.nextLine();
+                    tipo = valueOf(scanner.nextLine());
                     System.out.println("Introduce el precio base de la habitación: ");
                     double precioBase = scanner.nextDouble();
                     scanner.nextLine();
@@ -61,7 +78,7 @@ public class Main {
                     System.out.println("Introduce el id del cliente: ");
                     int clienteId = scanner.nextInt();
                     System.out.println("Introduce el tipo de habitación (SIMPLE, DOBLE, SUITE): ");
-                    tipo = scanner.next();
+                    tipo = valueOf(scanner.nextLine());
                     System.out.println("Introduce la fecha de entrada (año): ");
                     int anioEntrada = scanner.nextInt();
                     scanner.nextLine();
@@ -85,7 +102,7 @@ public class Main {
                     int numeroHabitacion = hotel.reservarHabitacion(clienteId, tipo, fechaEntrada,
                         fechaSalida);
                     System.out.println("Datos de la habitacion");
-                    Habitacion habitacion = hotel.getHabitacion(numeroHabitacion);
+                    Habitacion habitacion = gestorHabitaciones.getHabitacion(numeroHabitacion);
                     System.out.println(
                         "Habitación #" + habitacion.getNumero() + " - Tipo: " + habitacion.getTipo()
                             + " - Precio base: " + habitacion.getPrecioBase());
@@ -95,7 +112,7 @@ public class Main {
                     hotel.listarReservas();
                     break;
                 case LISTAR_CLIENTES:
-                    hotel.listarClientes();
+                    GestorClientes.listarClientes();
                     break;
                 case REGISTRAR_CLIENTE:
                     String nombre;
@@ -134,7 +151,7 @@ public class Main {
                     }
                     System.out.println("¿Es VIP? (true/false): ");
                     boolean esVip = scanner.nextBoolean();
-                    hotel.registrarCliente(nombre, email, dni, esVip);
+                    GestorClientes.registrarCliente(nombre, email, dni, esVip);
                     break;
                 case SALIR:
                     System.out.println("Saliendo del programa...");
